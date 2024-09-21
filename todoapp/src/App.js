@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useReducer, useRef, useMemo, useCallback } from 'react';
-import { Button, TextField, List, ListItem, Typography, Card, CardContent, Grid } from '@mui/material';
+import React, { useState, useEffect, useReducer, useRef, useMemo, useCallback, useContext } from 'react';
+import { Button, TextField, List, ListItem, Typography, Card, CardContent, Grid, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { ThemeContext } from './ThemeContext.js';
 
 export default function App() {
   const init = () => {
@@ -10,6 +11,8 @@ export default function App() {
   const [input, setInput] = useState('');
   const inputRef = useRef(null);
   const [todos, dispatch] = useReducer(reducer, [], init);
+
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   function handleSubmit(e) {
     e.preventDefault(); // Prevent page reload
@@ -55,8 +58,17 @@ export default function App() {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
+  const handleChange = (event) => toggleTheme(event.target.value);
+
+  const themeStyles = {
+    backgroundColor: theme === 'light' ? '#fff' : '#333',
+    color: theme === 'light' ? '#000' : '#fff',
+    padding: '20px',
+    minHeight: '100vh',
+  };
+
   return (
-    <Grid display="flex" justifyContent="center" alignItems="center" style={{ padding: 24 }}>
+    <Grid display="flex" justifyContent="center" alignItems="center" style={{ padding: 24, ...themeStyles }}>
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
           <Typography variant="h4">My To-Do List</Typography>
@@ -86,6 +98,16 @@ export default function App() {
               </ListItem>
             ))}
           </List>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={theme}
+            label="Theme"
+            onChange={handleChange}
+          >
+            <FormControlLabel value="dark" control={<Radio />} label="Dark" />
+            <FormControlLabel value="light" control={<Radio />} label="Light" />
+          </RadioGroup>
         </CardContent>
       </Card>
     </Grid>
